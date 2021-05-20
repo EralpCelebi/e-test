@@ -1,5 +1,5 @@
 # eTest
-One class Python testing library.
+One-class one-file Python testing library.
 
 ## Installation
 You can include the eTest.py file in your source and import it.
