@@ -9,11 +9,12 @@ from rich.table import Table
 class test(object):
     functions = {}
     
-    def __init__(self, result: Optional[any]) -> None:
+    def __init__(self, result: Optional[any], arguments: Optional[list] = None) -> None:
         self.result = result
+        self.arguments = arguments
     
     def __call__(self, function) -> any:
-        test.functions[function.__name__] = [function, self.result]
+        test.functions[function.__name__] = [function, self.result, self.arguments]
         
         return function
 
@@ -28,8 +29,6 @@ class test(object):
         accepted =  share_progress.add_task("[green]Accepted", total=len(test.functions.keys()))
         rejected =  share_progress.add_task("[red]Rejected",total=len(test.functions.keys()))
         total    =  share_progress.add_task("[blue]Total", total=len(test.functions.keys()))
-
-        
         
         progress_table = Table.grid()
         progress_table.add_row(
@@ -40,8 +39,20 @@ class test(object):
         
         with Live(progress_table, refresh_per_second=10):
             for key in test.functions.keys():
-                if test.functions[key][0]() == test.functions[key][1]:
+                
+                result = test.functions[key][0](
+                    *(
+                        test.functions[key][2]
+                        or
+                        []
+                    )
+                )
+                
+                expected = test.functions[key][1]
+                
+                if result == expected:
                     share_progress.advance(accepted)
+                    
                 else:
                     rejected_shares.append(key)
                     share_progress.advance(rejected)
@@ -49,11 +60,10 @@ class test(object):
                 share_progress.advance(total)
                     
                         
-
 if __name__ == "__main__":
-    @test(29)
-    def main():
-        return 29
+    @test(64, [32,32])
+    def main(a, b):
+        return a + b
 
 
     test.run()
