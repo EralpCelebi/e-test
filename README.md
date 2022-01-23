@@ -15,6 +15,11 @@ from eTest import test
 @test(4)
 def sqr(num=2):
   return num**2
+
+# You can also use lists as arguments.
+@test(9, [3])
+def sqr(num=2):
+  return num**2
  
  test.run()
 ```
